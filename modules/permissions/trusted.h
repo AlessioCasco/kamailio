@@ -71,6 +71,12 @@ int allow_trusted(struct sip_msg* _msg, char* _s1, char* _s2);
 
 
 /*
+ * Check if request comes from trusted ip address with matching from URI
+ * with a HACK
+ */
+int allow_trusted_1(struct sip_msg* _msg, char* str1, char* str2, int check_uri);
+
+/*
  * Checks based on request's source address, protocol, and From URI
  * if request can be trusted without authentication.
  */

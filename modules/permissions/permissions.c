@@ -136,6 +136,8 @@ static cmd_export_t cmds[] = {
 		REQUEST_ROUTE | FAILURE_ROUTE},
 	{"allow_trusted",  (cmd_function)allow_trusted_0,  0, 0, 0,
 		ANY_ROUTE},
+	{"allow_trusted",  (cmd_function)allow_trusted_1,  1, fixup_uint_uint, 0,
+		ANY_ROUTE},
 	{"allow_trusted",  (cmd_function)allow_trusted_2,  2, fixup_spve_spve,
 		fixup_free_spve_spve, ANY_ROUTE},
 	{"allow_uri",      (cmd_function)allow_uri, 2, double_fixup, 0,

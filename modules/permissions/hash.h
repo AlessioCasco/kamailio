@@ -89,7 +89,7 @@ int hash_table_insert(struct trusted_list** hash_table, char* src_ip,
  * value and pattern that matches to From URI.
  */
 int match_hash_table(struct trusted_list** table, struct sip_msg* msg,
-		     char *scr_ip, int proto);
+		     char *scr_ip, int proto, int check_uri);
 
 
 /* 

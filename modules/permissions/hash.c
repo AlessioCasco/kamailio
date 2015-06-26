@@ -24,6 +24,7 @@
 #include <regex.h>
 #include "../../mem/shm_mem.h"
 #include "../../parser/parse_from.h"
+#include "../../parser/parse_uri.h"
 #include "../../ut.h"
 #include "../../hashes.h"
 #include "../../usr_avp.h"
@@ -210,7 +211,7 @@ int hash_table_insert(struct trusted_list** table, char* src_ip,
  * Returns number of matches or -1 if none matched.
  */
 int match_hash_table(struct trusted_list** table, struct sip_msg* msg,
-		char *src_ip_c_str, int proto)
+		char *src_ip_c_str, int proto, int check_uri)
 {
 	str uri;
 	char uri_string[MAX_URI_SIZE + 1];
@@ -225,14 +226,25 @@ int match_hash_table(struct trusted_list** table, struct sip_msg* msg,
 
 	if (IS_SIP(msg))
 	{
-		if (parse_from_header(msg) < 0) return -1;
-		uri = get_from(msg)->uri;
-		if (uri.len > MAX_URI_SIZE) {
-			LM_ERR("from URI too large\n");
-			return -1;
+		if (check_uri == 0) { // parse from
+            if (parse_from_header(msg) < 0) return -1;
+            uri = get_from(msg)->uri;
+            if (uri.len > MAX_URI_SIZE) {
+                LM_ERR("from URI too large\n");
+                return -1;
+            }
+            memcpy(uri_string, uri.s, uri.len);
+            uri_string[uri.len] = (char)0;
+		} else {
+			if (parse_sip_msg_uri(msg) < 0) return -1;
+			uri = msg->parsed_uri.user;
+			if (uri.len > MAX_URI_SIZE) {
+				LM_ERR("message has From URI too large\n");
+				return -1;
+			}
+			memcpy(uri_string, uri.s, uri.len);
+			uri_string[uri.len] = (char)0;
 		}
-		memcpy(uri_string, uri.s, uri.len);
-		uri_string[uri.len] = (char)0;
 	}
 
 	for (np = table[perm_hash(src_ip)]; np != NULL; np = np->next) {
